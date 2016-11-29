@@ -1,0 +1,150 @@
+div.project{
+	background-color: lightgray;
+	margin-bottom: 1.2em;
+}
+
+div.roundedProject {
+	position:relative;
+    border-radius: 1.5em;
+    padding: 0.6em 0.6em 0.6em 0.6em;
+}
+
+div.roundedConfiguration {
+	color: darkblue;
+	font-weight: bold;
+    border-radius: 1.5em;
+    padding: 0.6em 2.0em 0.6em 2.0em;
+    min-width: 12.5em;
+    max-width: 12.5em;
+    width: 12.5em;
+    height: 6.5em;
+    text-align: center;
+    vertical-align: middle;
+    display: table-cell;
+    background-color: white; !important
+}
+
+div.roundedBuildStep {
+	border-radius: 1em;
+	padding: 3px 3px 3px 3px;
+	width: 9em;
+	height: 7em;
+	background-color: silver;
+	text-align: center;
+	vertical-align: middle;
+}
+
+.collapseIcon{
+	position: absolute;
+	top: 0.4em;
+	right: 1.4em;
+}
+
+.buildTypeStep{
+	margin-left: 1em;
+	margin-right: 1em;
+}
+
+.configuration{
+	color: black;
+}
+
+a roundedConfiguration:hover{
+	color: inherit;
+}
+
+a:active{
+	color: black;
+}
+
+a:visited{
+	color: black;
+}
+
+.configurationTitle{
+	font-size: 0.8em;
+}
+
+a label:hover{
+	cursor: pointer;
+}
+
+.projectDescription{
+    font-size: 1em;
+    font-weight: italic;
+}
+
+.border{
+	border-style: solid;
+	border-width: 1px;
+	border-color: black;
+}
+
+.projectTitle{
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+div.SUCCESS{
+    background-color: #00BF00;
+}
+
+div.FAILURE{
+    background-color: red;
+}
+
+div.UNKNOWN{
+	background-color: orange;
+}
+
+div.None{
+    background-color: gray;
+}
+
+.template{
+	display: none;
+}
+
+.panel-heading{
+	display: inline-block;
+	padding: 0px 0px 0px 20px;
+}
+
+.alert{
+	text-align: center;
+}
+
+.buildOngoing {
+    -webkit-animation-name: blinker;
+    -webkit-animation-duration: 1.5s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+
+    -moz-animation-name: blinker;
+    -moz-animation-duration: 1.5s;
+    -moz-animation-timing-function: linear;
+    -moz-animation-iteration-count: infinite;
+
+    animation-name: blinker;
+    animation-duration: 1.5s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+@-moz-keyframes blinker {
+    0% {  }
+    50% { background-color: inherit; }
+    100% {  }
+}
+
+@-webkit-keyframes blinker {
+    0% {  }
+    50% { background-color: inherit; }
+    100% {  }
+}
+
+@keyframes blinker {
+    0% {  }
+    50% { background-color: inherit; }
+    100% {  }
+}

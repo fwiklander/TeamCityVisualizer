@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Version 3... or so</title>
+	<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+	<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+            crossorigin="anonymous">
+    </script>
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+          crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous">
+    </script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/config.css">
+    <script src="/static/js/project.js"></script>
+    <script src="/static/js/buildStatus.js"></script>
+    <script src="/static/js/css.js"></script>
+    <script src="/static/js/jsPlumb-2.2.3-min.js"></script>
+
+    <script>
+        $(function(){
+            getProject('{{ project_id }}', setProjectInfo);
+        });
+    </script>
+    <style>
+    </style>
+</head>
+<body>
+<div id="mainDiv" class="container-fluid">
+    <div id="projectContentTemplate" class="panel-group border project roundedProject template">
+        <div class="panel-heading">
+            <a id="projectLink" href="">
+                <h4 id="projectTitle" class="">Project title
+                    <small>Project description</small>
+                </h4>
+            </a>
+            <a id="collapseLink" href="#collapseDiv" data-toggle="collapse" class="">
+                <span id="collapseToggleIcon" class="ui-icon ui-icon-caret-1-s collapseIcon"></span>
+            </a>
+        </div>
+        <div id="collapseDiv" class="panel-collapse collapse in">
+            <div>
+                <div id="configurationTemplate" class="configurations border roundedConfiguration template">
+                    <span id="queuedBuild" class="ui-icon ui-icon-clock" style="position: absolute; top: 1.5em; right: 0.5em"></span>
+                    <span id="startBuild" class="ui-icon ui-icon-circle-triangle-e" style="position: absolute; top: 0.5em; right: 0.5em;" onclick="triggerBuild('DeployTest_ContinuousIntegration')" onmouseover="$(this).css('cursor', 'pointer')"></span>
+                    <div id="ConfigurationTitle" class="">Configuration</div>
+                    <!--<div id="stepTemplate" class="border buildTypeStep" style="">Build step 1</div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="fakeButton" onclick="fakeRefresh()" class="btn">Fake refresh</button>
+</div>
+</body>
+</html>
