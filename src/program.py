@@ -18,7 +18,7 @@ class MainHandler(tornado.web.RequestHandler):
 
 
 template_path = os.path.join(os.path.dirname(__file__), 'templates')
-def make_app():
+def make_app(debug_mode):
     return tornado.web.Application([(r"/configuration/(.+)/build/", configuration.ConfigurationBuildHandler),
                                     (r"/configuration/(.+)/trigger/", configuration.ConfigurationTriggerHandler),
                                     (r"/project/(.+)/history/(\d)", project.ProjectHistoryHandler),
@@ -27,7 +27,7 @@ def make_app():
                                     (r"/project/(.+)/lastCompleteBuildChain", project.LastCompleteBuildChainHandler),
                                     (r"/project/(.+)", project.ProjectHandler),
                                     (r"/(.*)", MainHandler)],
-                                   debug=True,
+                                   debug=debug_mode,
                                    static_path=os.path.join(os.path.dirname(__file__), "static"))
 
 
@@ -36,10 +36,11 @@ def main(args):
     tc_host = 'http://localhost'
     tc_port = '8888'
     tc_auth_type = 'guestAuth'
+    debug_mode=False
     try:
-        opts, args = getopt.getopt(args,"h:p:l:a",["tcHost=","tcPort=", "httpAuth", "appPort="])
+        opts, args = getopt.getopt(args,"h:p:l:ad",["tcHost=","tcPort=", "httpAuth", "appPort=", "debug"])
     except getopt.GetoptError:
-      print ('program.py -h <TeamCityHost> -p <TeamCityPort> -a -l <applicationPort>')
+      print ('program.py -h <TeamCityHost> -p <TeamCityPort> -a [httpAuth] -l <applicationPort> -d [debug mode]')
       sys.exit(2)
     for (opt, arg) in opts:
         if opt in ('-h', '--tcHost'):
@@ -51,8 +52,10 @@ def main(args):
             # Needs to be complemented with credentials
         elif opt in ('-l', '--appPort'):
             app_port = int(arg)
+        elif opt in ('-d', '--debug'):
+            debug_mode = True
 
-    app = make_app()
+    app = make_app(debug_mode)
     tcRequests.base_uri = tc_host + ':' + tc_port + '/' + tc_auth_type
     print ('App is listening on port ' + str(app_port))
     print ('Accessing TeamCity API at ' + tcRequests.base_uri)
