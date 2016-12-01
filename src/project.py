@@ -81,6 +81,7 @@ class ProjectHistoryHandler(tornado.web.RequestHandler):
         pass
 
     def get(self, project_id, history_length):
+        history_length = int(history_length)
         result = get_project(project_id)
 
         build_type_count = result['payload_json']['buildTypes']['count']

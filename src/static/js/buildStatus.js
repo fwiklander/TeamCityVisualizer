@@ -7,7 +7,7 @@ function setBuildHistory() {
     }
 
     // Set up and make the request.
-    request.open('GET', '/project/' + projectId + '/history' + buildsToDisplayInHistory, true);
+    request.open('GET', '/project/' + projectId + '/history/' + buildsToDisplayInHistory, true);
     request.send();
 }
 
