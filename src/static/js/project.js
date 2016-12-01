@@ -1,5 +1,8 @@
-var refreshInterval = 6 * 1000 * 1 * 1;
-var currentChainElementIds, lastCompleteElementIds, historyElementIds;
+var refreshHours = 4;
+var refreshMinutes = 0;
+var refreshSeconds = 0;
+var refreshInterval = (refreshHours * 3600 + refreshMinutes * 60  + refreshSeconds) * 1000;
+var currentChainElementIds, historyElementIds;
 var chainIdentifierCurrent = 'current', chainIdentifierLastComplete = 'lastComplete', chainIdentifierHistory = 'history';
 var buildsToDisplayInHistory = 2;
 
@@ -25,7 +28,7 @@ function setProjectInfo(project) {
     newProject.prop('id', 'project' + project['id']);
     newProject.find('#projectTitle').html(project['name'] + ' <small>' + (project['description'] != null ? project['description'] : '') + '</small>');
     newProject.find('#collapseLink').prop('href', '#collapse' + project['id']);
-    newProject.find('#collapseDiv').prop('id', 'collapse' + project['id'])
+    newProject.find('#collapseDiv').prop('id', 'collapse' + project['id']);
     newProject.find('#collapseToggleIcon').click(function () {
         newProject.find("svg").hasClass("template") ?
         $("svg").removeClass("template") :
@@ -37,33 +40,23 @@ function setProjectInfo(project) {
     var template = newProject.find('#collapse' + project['id']).find('#configurationTemplate');
     newProject.find('#collapse' + project['id']).find('#configurationTemplate').remove();
 
-    var buildIdentifier,
-    elemId;
-
     // Set current build chain
-    buildIdentifier = 'current';
-    var renderedBuildTypes = setConfigurations(
-            template,
-            newProject.find('#collapse' + project['id']),
-            project['buildTypes']['buildType'],
-            buildIdentifier);
-
-    currentChainElementIds.push({
-        builds: renderedBuildTypes,
-        status: 'current'
-    });
+    setConfigurations(
+        template,
+        newProject.find('#collapse' + project['id']),
+        project['buildTypes']['buildType'],
+        chainIdentifierCurrent);
 
     updateCurrentBuildChain();
 
     // Set last complete build chain
-    buildIdentifier = 'lastComplete';
-    lastCompleteElementIds = setConfigurations(
-            template,
-            newProject.find('#collapse' + project['id']),
-            project['buildTypes']['buildType'],
-            buildIdentifier);
+    setConfigurations(
+        template,
+        newProject.find('#collapse' + project['id']),
+        project['buildTypes']['buildType'],
+        chainIdentifierLastComplete);
 
-    setLastSuccessfulBuild(lastCompleteElementIds, buildIdentifier);
+    setLastSuccessfulBuildChain();
 
     // Last n builds (n = buildsToDisplayInHistory)
     historyElementIds = [];
@@ -87,47 +80,32 @@ function setProjectInfo(project) {
 }
 
 function fakeRefresh() {
-    var str = 'Fake refresh: ';
-    for (var index = 0; index < currentChainElementIds.length; index++) {
-        for (var index = 0; index < currentChainElementIds.length; index++) {
-            // alert('builds count: ' + currentChainElementIds[index].builds.length);
-            for (var build = 0; build < currentChainElementIds[index].builds.length; build++) {
-                if (index === 0 && build === 0) {
-                    var elemId = '#buildType' + currentChainElementIds[index].builds[build]['id'] + currentChainElementIds[index].status;
-                    // alert('config: ' + 'conf' + '; element id: ' + elemId);
-                    updateConfigurationStatus($(elemId), currentChainElementIds[index].status);
-                    // var elem = $('buildType' + currentChainElementIds[index].builds[build]['id'] + currentChainElementIds[index].status);
-                    // alert('Elem is ' + elem + '; with id ' + elem.id);
-                }
-            }
-        }
-    }
-
-    // alert(str);
+    updateCurrentBuildChain();
 }
 
-// Här vet vi inget om vilket bygge det är, endast vilken konfiguration... borde kunna användas för att skapa historik...
 function setConfigurations(template, configurationDiv, buildTypes, buildIdentifier) {
+    var divElement = '<div id="buildChainHeader' + buildIdentifier + '" style="margin-top: 15px;">';
     switch (buildIdentifier) {
-    case 'current':
-        var btn = '' // '<a class="btn" href="/configuration/DeployTest_ContinuousIntegration/trigger/">Trigger build</a>'
-            configurationDiv.append('Current build chain' + btn);
+    case chainIdentifierCurrent:
+        divElement += 'Current build chain';
         break;
-    case 'lastComplete':
-        configurationDiv.append('Last complete build chain');
+    case chainIdentifierLastComplete:
+        divElement += 'Last complete build chain';
         break;
-    case 'history':
-        configurationDiv.append('Build chain history');
+    case chainIdentifierHistory:
+        divElement += 'Build chain history</br>';
         break;
     default:
-        configurationDiv.append('&ensp;');
         break;
     }
+
+    divElement += '<span style="font-size: large;"></span></div>';
+    configurationDiv.append(divElement);
 
     for (var i = 0; i < buildTypes.length; i++) {
         var clone = template.clone();
         clone.prop('id', 'buildType' + buildTypes[i]['id'] + buildIdentifier);
-        clone.find('#ConfigurationTitle').html(buildTypes[i]['name'] + '</br>v');
+        clone.find('#ConfigurationTitle').html(buildTypes[i].name + '</br>v');
         clone.data('configId', buildTypes[i]['id']);
         clone.data('configName', buildTypes[i]['name']);
         clone.css('position', 'relative');
@@ -135,8 +113,8 @@ function setConfigurations(template, configurationDiv, buildTypes, buildIdentifi
         configurationDiv.append(clone);
         if (i > 0) {
             jsPlumb.connect({
-                source: ('buildType' + buildTypes[i - 1]['id'] + buildIdentifier),
-                target: ('buildType' + buildTypes[i]['id'] + buildIdentifier),
+                source: ('buildType' + buildTypes[i - 1].id + buildIdentifier),
+                target: ('buildType' + buildTypes[i].id + buildIdentifier),
                 anchors: ["Right", "Left"],
                 endpoint: "Blank",
                 connector: "Straight",
@@ -145,8 +123,6 @@ function setConfigurations(template, configurationDiv, buildTypes, buildIdentifi
                 detachable: false
             });
         }
-
-        // updateConfigurationStatus(clone, buildIdentifier);
     }
 
     return buildTypes;

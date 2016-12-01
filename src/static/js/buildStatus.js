@@ -1,4 +1,5 @@
 function setBuildHistory() {
+    projectId = jQuery.data(document.body, "projectId");
     var request = new XMLHttpRequest();
 
     request.onload = function (response) {
@@ -6,38 +7,32 @@ function setBuildHistory() {
     }
 
     // Set up and make the request.
-    request.open('GET', '/project/DeployTest/history/' + historyElementIds.length, true);
+    request.open('GET', '/project/' + projectId + '/history' + buildsToDisplayInHistory, true);
     request.send();
 }
 
-// Obsolete this
-function setLastSuccessfulBuild(renderedBuildTypes, buildIdentifier) {
+function setLastSuccessfulBuildChain() {
+    projectId = jQuery.data(document.body, "projectId");
     var request = new XMLHttpRequest();
-    buildTypeToCheck = renderedBuildTypes[renderedBuildTypes.length - 1];
 
     request.onload = function (response) {
         if (request.status === 200) {
-            buildsForBuildType = JSON.parse(request.responseText).build;
-            for (var buildIndex = 0; buildIndex < buildsForBuildType.length; buildIndex++) {
-                if (buildsForBuildType[buildIndex].status == 'SUCCESS' && buildsForBuildType[buildIndex].state == 'finished') {
-                    for (var i2 = 0; i2 < renderedBuildTypes.length; i2++) {
-                        elemId = '#buildType' + renderedBuildTypes[i2]['id'] + buildIdentifier;
-                        updateConfigurationStatus($(elemId), buildIdentifier, buildsForBuildType[buildIndex].number);
-                    }
-
-                    break;
-                }
+            result = JSON.parse(request.responseText);
+            count = result.buildTypeCount;
+            if(count > 0){
+                $('#buildChainHeader' + chainIdentifierLastComplete).children('span').html(' - v' + result.version);
+                var buildChain = result.chain;
+                buildChain.forEach(function(chainItem){
+                    var elemId = '#buildType' + chainItem.buildTypeId + chainIdentifierLastComplete;
+                    updateBuildStage(elemId, chainItem, false);
+                });
             }
         }
     }
 
     // Set up and make the request.
-    request.open('GET', '/configuration/' + buildTypeToCheck.id + '/build/', true);
+    request.open('GET', '/project/' + projectId + '/lastCompleteBuildChain', true);
     request.send();
-}
-
-function setLastSuccessfulBuildChain(projectId) {
-    
 }
 
 function updateCurrentBuildChain() {
@@ -70,7 +65,7 @@ function updateBuildStage(elemId, build, isLastConfigurationInChain) {
 
     var cssClass = 'None';
     if (build != null) {
-        stageElement.find('#ConfigurationTitle').html(stageElement.data('configName') + '</br>v' + build.version);
+        stageElement.find('#ConfigurationTitle').html(stageElement.data('configName') + (build.version != null ? ('</br>v' + build.version) : ''));
 
         cssClass = build.status;
         if (cssClass === 'UNKNOWN') {
@@ -82,77 +77,10 @@ function updateBuildStage(elemId, build, isLastConfigurationInChain) {
         } else if (isElementBlinking(stageElement) && build.state === 'finished') {
             stopBlinking(stageElement);
             if (isLastConfigurationInChain && cssClass === 'SUCCESS') {
-                // setLastSuccessfulBuild(lastCompleteElementIds, 'lastComplete');
+                setLastSuccessfulBuildChain();
             }
         }
     }
 
     updateStatusCss(stageElement, cssClass);
-}
-
-// Obsolete this perhaps
-function updateConfigurationStatus(configElement, buildIdentifier, buildNumber = '', isLastConfigurationInChain = false) {
-    var request = new XMLHttpRequest();
-
-    request.onload = function (response) {
-        if (request.status === 200) {
-            var result = JSON.parse(request.responseText);
-
-            var cssClass = 'None';
-            if (result['count'] > 0) {
-                var buildToDisplay = getBuildToDisplay(result['build'], buildIdentifier, buildNumber);
-                if (buildToDisplay == null) {
-                    return;
-                }
-
-                configElement.find('#ConfigurationTitle').html(configElement.data('configName') + '</br>v' + buildToDisplay['number']);
-
-                cssClass = buildToDisplay['status'];
-                if (cssClass === 'UNKNOWN') {
-                    setCanceledByStatus(buildToDisplay['id'], configElement);
-                }
-
-                if (buildToDisplay['running'] != null && buildToDisplay['running'] && !isElementBlinking(configElement)) {
-                    startBlinking(configElement);
-                } else if (isElementBlinking(configElement) && buildToDisplay.state === 'finished') {
-                    stopBlinking(configElement);
-                    if (isLastConfigurationInChain && cssClass === 'SUCCESS') {
-                        setLastSuccessfulBuild(lastCompleteElementIds, 'lastComplete');
-                    }
-                }
-            }
-
-            updateStatusCss(configElement, cssClass);
-        }
-    }
-
-    // Set up and make the request.
-    request.open('GET', '/configuration/' + configElement.data('configId') + '/build/', true);
-    request.send();
-}
-
-function getBuildToDisplay(builds, buildIdentifier, buildNumber) {
-    switch (buildIdentifier) {
-    case 'current':
-        for (var i = 0; i < builds.length; i++) {
-            if (builds[i].state != 'queued') {
-                return buildToDisplay = builds[i];
-            }
-        }
-
-        return null;
-        break;
-    case 'lastComplete':
-        for (var i = 0; i < builds.length; i++) {
-            if (builds[i].number == buildNumber) {
-                return builds[i];
-            }
-        }
-
-        return null;
-        break;
-    default:
-        return null;
-        break;
-    }
 }

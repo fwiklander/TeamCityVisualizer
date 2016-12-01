@@ -24,6 +24,7 @@ def make_app():
                                     (r"/project/(.+)/history/(\d)", project.ProjectHistoryHandler),
                                     (r"/build/(.+)", build.BuildHandler),
                                     (r"/project/(.+)/currentBuildChain", project.CurrentBuildChainHandler),
+                                    (r"/project/(.+)/lastCompleteBuildChain", project.LastCompleteBuildChainHandler),
                                     (r"/project/(.+)", project.ProjectHandler),
                                     (r"/(.*)", MainHandler)],
                                    debug=True,
@@ -45,7 +46,7 @@ def main(args):
             tc_host = arg
         elif opt in ('-p', '--tcPort'):
             tc_port = arg
-        elif opt in ('-a', '--authType'):
+        elif opt in ('-a', '--httpAuth'):
             tc_auth_type = 'httpAuth'
             # Needs to be complemented with credentials
         elif opt in ('-l', '--appPort'):

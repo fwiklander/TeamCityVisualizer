@@ -1,6 +1,7 @@
 import tornado.web
 import json
 import configuration
+import build
 import TeamCityRequests as tcRequest
 
 
@@ -40,6 +41,41 @@ class CurrentBuildChainHandler(tornado.web.RequestHandler):
         self.write(result)
 
 
+class LastCompleteBuildChainHandler(tornado.web.RequestHandler):
+    def data_received(self, chunk):
+        pass
+
+    def get(self, project_id):
+        result = get_project(project_id)['payload_json']
+        last_build_type = result['buildTypes']['buildType'][result['buildTypes']['count'] - 1]
+        builds_for_last = configuration.get_builds(last_build_type['id'])['payload_json']
+        for build_info in builds_for_last['build']:
+            if build_info['status'] == 'SUCCESS':
+                build_chain = build.get_build_chain_to(build_info['id'])['payload_json']
+                chain_completed = True
+                for c in range(build_chain['count']):
+                    if build_chain['build'][c]['status'] != 'SUCCESS':
+                        chain_completed = False
+                        break
+                
+                if chain_completed:
+                    break
+        
+        completed_chain = dict(
+                            version=build_chain['build'][0]['number'],
+                            buildTypeCount=build_chain['count'],
+                            chain=[])
+
+        for chain_item in build_chain['build']:
+            completed_chain['chain'].append(dict(
+                id=chain_item['id'],
+                webUrl=chain_item['webUrl'],
+                status=chain_item['status'],
+                buildTypeId=chain_item['buildTypeId']))
+        
+        self.write(completed_chain)
+
+
 class ProjectHistoryHandler(tornado.web.RequestHandler):
     def data_received(self, chunk):
         pass
@@ -48,13 +84,20 @@ class ProjectHistoryHandler(tornado.web.RequestHandler):
         result = get_project(project_id)
 
         build_type_count = result['payload_json']['buildTypes']['count']
-        build_types = result['payload_json']['buildTypes']['buildType']
-        # history_first_configuration = configuration.get_builds(buildTypes[0]['id'])
+        if build_type_count == 0:
+            self.write('ajaj')
+            return
+        
+        first_build_type = result['payload_json']['buildTypes']['buildType'][0]
+        history_length = min(history_length, build_type_count)
 
         for x in range(0, build_type_count):
             pass
 
-        history = dict(history=build_types)
+        history = dict(
+                    count=history_length,
+                    history=first_build_type)
+
         self.write(history)
 
 
@@ -93,3 +136,4 @@ def get_project(project_id):
                 break
 
     return projects
+
