@@ -93,7 +93,7 @@ class ProjectHistoryHandler(tornado.web.RequestHandler):
         history_length = min(history_length, build_type_count)
 
         history = dict(
-                    count=history_length,
+                    historyCount=history_length,
                     history=[])
 
         # Get builds for first build type
@@ -117,8 +117,9 @@ class ProjectHistoryHandler(tornado.web.RequestHandler):
                 build_chain_history.append(build_chain_add)
 
             history['history'].append(dict(
+                                        chainCount=len(build_chain_history),
                                         version=build_chain_info['number'],
-                                        build_chain=build_chain_history))
+                                        buildChain=build_chain_history))
 
             if len(history['history']) >= history_length:
                 break

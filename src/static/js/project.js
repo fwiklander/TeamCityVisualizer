@@ -4,7 +4,7 @@ var refreshSeconds = 0;
 var refreshInterval = (refreshHours * 3600 + refreshMinutes * 60  + refreshSeconds) * 1000;
 var currentChainElementIds, historyElementIds;
 var chainIdentifierCurrent = 'current', chainIdentifierLastComplete = 'lastComplete', chainIdentifierHistory = 'history';
-var buildsToDisplayInHistory = 2;
+var buildsToDisplayInHistory = 5;
 
 function getProject(projectId, callback) {
     var request = new XMLHttpRequest();
@@ -85,6 +85,7 @@ function fakeRefresh() {
 
 function setConfigurations(template, configurationDiv, buildTypes, buildIdentifier) {
     var divElement = '<div id="buildChainHeader' + buildIdentifier + '" style="margin-top: 15px;">';
+    var versionTemp = '';
     switch (buildIdentifier) {
     case chainIdentifierCurrent:
         divElement += 'Current build chain';
@@ -94,12 +95,14 @@ function setConfigurations(template, configurationDiv, buildTypes, buildIdentifi
         break;
     case chainIdentifierHistory:
         divElement += 'Build chain history</br>';
+        versionTemp = 'v';
         break;
     default:
+        versionTemp = 'v';
         break;
     }
 
-    divElement += '<span style="font-size: large;"></span></div>';
+    divElement += '<span style="font-size: large;">' + versionTemp +'</span></div>';
     configurationDiv.append(divElement);
 
     for (var i = 0; i < buildTypes.length; i++) {

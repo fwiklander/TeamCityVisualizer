@@ -3,7 +3,23 @@ function setBuildHistory() {
     var request = new XMLHttpRequest();
 
     request.onload = function (response) {
-        if (request.status === 200) {}
+        if (request.status === 200) {
+            result = JSON.parse(request.responseText);
+            count = result.historyCount;
+            if(count > 0){
+                var index = 0;
+                result.history.forEach(function(historyItem){
+                    var chainIdentifier = chainIdentifierHistory + (index > 0 ? index : '');
+                    $('#buildChainHeader' + chainIdentifier).children('span').html(' - v' + historyItem.version);
+                    historyItem.buildChain.forEach(function(buildChainItem) {
+                        var elemId = '#buildType' + buildChainItem.buildStageId + chainIdentifier;
+                        updateBuildStage(elemId, buildChainItem, false);
+                    });
+                    index++;
+                });
+                $('build')
+            }
+        }
     }
 
     // Set up and make the request.
