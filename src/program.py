@@ -36,7 +36,7 @@ def main(args):
     tc_host = 'http://localhost'
     tc_port = '8888'
     tc_auth_type = 'guestAuth'
-    debug_mode=False
+    debug_mode = False
     try:
         opts, args = getopt.getopt(args,"h:p:l:ad",["tcHost=","tcPort=", "httpAuth", "appPort=", "debug"])
     except getopt.GetoptError:

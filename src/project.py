@@ -92,12 +92,36 @@ class ProjectHistoryHandler(tornado.web.RequestHandler):
         first_build_type = result['payload_json']['buildTypes']['buildType'][0]
         history_length = min(history_length, build_type_count)
 
-        for x in range(0, build_type_count):
-            pass
-
         history = dict(
                     count=history_length,
-                    history=first_build_type)
+                    history=[])
+
+        # Get builds for first build type
+        # Get chain for n number of builds
+
+        builds_for_configuration = configuration.get_builds(first_build_type['id'])['payload_json']
+        for build_info in builds_for_configuration['build']:
+            if build_info['number'] == 'N/A':
+                continue
+
+            build_chain = build.get_build_chain_from(build_info['id'])['payload_json']['build']
+            build_chain_history = []
+            for build_chain_info in build_chain:
+                build_chain_add = dict(
+                                    id=build_chain_info['id'],
+                                    buildStageId=build_chain_info['buildTypeId'],
+                                    status=build_chain_info['status'],
+                                    state=build_chain_info['state'],
+                                    webUrl=build_chain_info['webUrl'])
+
+                build_chain_history.append(build_chain_add)
+
+            history['history'].append(dict(
+                                        version=build_chain_info['number'],
+                                        build_chain=build_chain_history))
+
+            if len(history['history']) >= history_length:
+                break
 
         self.write(history)
 
