@@ -10,7 +10,7 @@ function setBuildHistory() {
                 var index = 0;
                 result.history.forEach(function(historyItem){
                     var chainIdentifier = chainIdentifierHistory + (index > 0 ? index : '');
-                    $('#buildChainHeader' + chainIdentifier).children('span').html(' - v' + historyItem.version);
+                    $('#buildChainHeader' + chainIdentifier).children('span').html('v' + historyItem.version);
                     historyItem.buildChain.forEach(function(buildChainItem) {
                         var elemId = '#buildType' + buildChainItem.buildStageId + chainIdentifier;
                         updateBuildStage(elemId, buildChainItem, false);
