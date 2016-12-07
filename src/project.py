@@ -29,12 +29,13 @@ class CurrentBuildChainHandler(tornado.web.RequestHandler):
         
         for build_type_index in range(0, result['buildStageCount']):
             tc_build_type = project_info['buildTypes']['buildType'][build_type_index]
+            build_info = get_build_info(tc_build_type['id'])
             buildType = dict(
                 id=tc_build_type['id'],
                 name=tc_build_type['name'],
                 webUrl=tc_build_type['webUrl'],
-                lastBuild=get_build_info(tc_build_type['id']),
-                pendingBuilds=get_pending_builds(build_queue, tc_build_type['id']))
+                lastBuild=build_info['build'],
+                pendingBuilds=build_info['pendingCount'])
 
             result['buildStages'].append(buildType)
 
@@ -112,6 +113,7 @@ class ProjectHistoryHandler(tornado.web.RequestHandler):
                                     buildStageId=build_chain_info['buildTypeId'],
                                     status=build_chain_info.get('status'),
                                     state=build_chain_info['state'],
+                                    running=build_chain_info.get('running', False),
                                     webUrl=build_chain_info['webUrl'])
 
                 build_chain_history.append(build_chain_add)
@@ -198,20 +200,22 @@ def get_build_info(build_type_id):
     tc_builds = configuration.get_builds(build_type_id)['payload_json'].get('build')
     if tc_builds is None:
         return dict()
-        
-    tc_build = tc_builds[0]
-    build = dict(
-        id=tc_build['id'],
-        version=tc_build.get('number'),
-        status=tc_build.get('status'),
-        webUrl=tc_build['webUrl'],
-        state=tc_build['state'],
-        running=False)
     
-    if tc_build.get('running') is not None:
-        build['running']=tc_build['running']
+    build_info = dict(pendingCount=0)
+    for tc_build in tc_builds:
+        if tc_build['state'] == 'queued':
+            build_info['pendingCount'] += 1
+        else:
+            build_info['build'] = dict(
+                id=tc_build['id'],
+                version=tc_build.get('number'),
+                status=tc_build.get('status'),
+                webUrl=tc_build['webUrl'],
+                state=tc_build['state'],
+                running=tc_build.get('running', False))
+            break
 
-    return build
+    return build_info
 
 
 def get_project(project_id):
