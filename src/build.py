@@ -7,9 +7,14 @@ class BuildHandler(tornado.web.RequestHandler):
         pass
 
     def get(self, build_id):
-        uri = '/guestAuth/app/rest/builds/id:' + build_id
-        result = tcRequest.make_request(uri)
+        result = get_build(build_id)
         self.write(result['payload_json'])
+
+
+def get_build(build_id):
+    uri = '/app/rest/builds/id:' + str(build_id)
+    return tcRequest.make_request(uri)
+    
 
 
 def get_build_chain_to(build_id):

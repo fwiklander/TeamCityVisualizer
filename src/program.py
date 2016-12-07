@@ -17,15 +17,27 @@ class MainHandler(tornado.web.RequestHandler):
         self.render(os.path.join(template_path, 'index.html'), project_id=project_id)
 
 
+class TempHandler(tornado.web.RequestHandler):
+    def data_received(self, chunk):
+        pass
+
+    def get(self, url_value):
+        ret_value = url_value
+        ret_value = dict(id=project.get_build_id_for_version('DeployTest_ContinuousIntegration', '0.1.86'))
+        # ret_value = dict(ret=project.get_dependency_build_types('DeployTest_DeployToAzureDev'))
+        self.write(ret_value)
+
+
 template_path = os.path.join(os.path.dirname(__file__), 'templates')
 def make_app(debug_mode):
     return tornado.web.Application([(r"/configuration/(.+)/build/", configuration.ConfigurationBuildHandler),
-                                    (r"/configuration/(.+)/trigger/", configuration.ConfigurationTriggerHandler),
                                     (r"/project/(.+)/history/(\d)", project.ProjectHistoryHandler),
                                     (r"/build/(.+)", build.BuildHandler),
                                     (r"/project/(.+)/currentBuildChain", project.CurrentBuildChainHandler),
                                     (r"/project/(.+)/lastCompleteBuildChain", project.LastCompleteBuildChainHandler),
+                                    (r"/project/(.+)/promoteBuild/([0-9]+)", project.PromoteBuildHandler),
                                     (r"/project/(.+)", project.ProjectHandler),
+                                    (r"/temp/(.+)", TempHandler),
                                     (r"/(.*)", MainHandler)],
                                    debug=debug_mode,
                                    static_path=os.path.join(os.path.dirname(__file__), "static"))

@@ -11,17 +11,16 @@ class ConfigurationBuildHandler(tornado.web.RequestHandler):
         self.write(result['payload_json'])
 
 
-class ConfigurationTriggerHandler(tornado.web.RequestHandler):
-    def data_received(self, chunk):
-        pass
-
-    def get(self, config_id):
-        result = tcRequest.start_build(config_id)
-        self.write('Build trigger sent')
+def get_build_stage(stage_id):
+    uri = '/app/rest/buildTypes/id:' + stage_id
+    return tcRequest.make_request(uri)
 
 
-def get_builds(configuration_id):
-    uri = '/app/rest/buildTypes/id:' + configuration_id + '/builds/?locator=defaultFilter:false'
+def get_builds(configuration_id, include_ongoing = True):
+    uri = '/app/rest/buildTypes/id:' + configuration_id + '/builds'
+    if include_ongoing:
+        uri += '/?locator=defaultFilter:false'
+
     return tcRequest.make_request(uri)
 
 

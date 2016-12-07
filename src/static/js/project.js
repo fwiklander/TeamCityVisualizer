@@ -85,7 +85,7 @@ function fakeRefresh() {
 
 function setConfigurations(template, configurationDiv, buildTypes, buildIdentifier) {
     var divElement = '<div id="buildChainHeader' + buildIdentifier + '" style="margin-top: 15px;">';
-    var versionTemp = '';
+    var buttonElement = '';
     switch (buildIdentifier) {
     case chainIdentifierCurrent:
         divElement += 'Current build chain';
@@ -95,24 +95,23 @@ function setConfigurations(template, configurationDiv, buildTypes, buildIdentifi
         break;
     case chainIdentifierHistory:
         divElement += 'Build chain history</br>';
-        versionTemp = 'v';
-        break;
     default:
-        versionTemp = 'v';
+        buttonElement = '<button id="promoteBuildButton" class="btn" style="padding: 3px 6px; margin-left: 15px; margin-bottom: 5px;">Promote build</button>';
         break;
     }
 
-    divElement += '<span style="font-size: large;">' + versionTemp +'</span></div>';
+    divElement += '<span style="font-size: large;"></span>' + buttonElement + '</div>';
     configurationDiv.append(divElement);
 
     for (var i = 0; i < buildTypes.length; i++) {
         var clone = template.clone();
         clone.prop('id', 'buildType' + buildTypes[i]['id'] + buildIdentifier);
-        clone.find('#ConfigurationTitle').html(buildTypes[i].name + '</br>v');
+        clone.find('#ConfigurationTitle').html(buildTypes[i].name);
         clone.data('configId', buildTypes[i]['id']);
         clone.data('configName', buildTypes[i]['name']);
         clone.css('position', 'relative');
         clone.css('left', i * 30 + 'px');
+
         configurationDiv.append(clone);
         if (i > 0) {
             jsPlumb.connect({
@@ -135,10 +134,12 @@ function triggerBuild(configurationId) {
 
     var request = new XMLHttpRequest();
 
-    request.onload = function (response) {
-        if (request.status === 200) {}
+    request.onload = function(response) {
+        if (request.status === 200) {
+            alert('Build triggered');
+        }
     }
 
-    request.open('GET', '/configuration/' + configurationId + '/trigger/', true);
+    request.open('GET', '/configuration/' + configurationId + '/trigger/' + '291', true);
     request.send();
 }

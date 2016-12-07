@@ -71,7 +71,7 @@ class LastCompleteBuildChainHandler(tornado.web.RequestHandler):
                 id=chain_item['id'],
                 webUrl=chain_item['webUrl'],
                 status=chain_item['status'],
-                buildTypeId=chain_item['buildTypeId']))
+                buildStageId=chain_item['buildTypeId']))
         
         self.write(completed_chain)
 
@@ -99,7 +99,7 @@ class ProjectHistoryHandler(tornado.web.RequestHandler):
         # Get builds for first build type
         # Get chain for n number of builds
 
-        builds_for_configuration = configuration.get_builds(first_build_type['id'])['payload_json']
+        builds_for_configuration = configuration.get_builds(first_build_type['id'], False)['payload_json']
         for build_info in builds_for_configuration['build']:
             if build_info['number'] == 'N/A':
                 continue
@@ -110,7 +110,7 @@ class ProjectHistoryHandler(tornado.web.RequestHandler):
                 build_chain_add = dict(
                                     id=build_chain_info['id'],
                                     buildStageId=build_chain_info['buildTypeId'],
-                                    status=build_chain_info['status'],
+                                    status=build_chain_info.get('status'),
                                     state=build_chain_info['state'],
                                     webUrl=build_chain_info['webUrl'])
 
@@ -125,6 +125,69 @@ class ProjectHistoryHandler(tornado.web.RequestHandler):
                 break
 
         self.write(history)
+
+
+class PromoteBuildHandler(tornado.web.RequestHandler):
+    def data_received(self, chunk):
+        pass
+
+    def get(self, project_id, dependency_build_id):
+        project_info = get_project(project_id)['payload_json']
+        dependency_build_id = int(dependency_build_id)
+        build_type_id = ''
+        currentIndex = 0
+        dependency_build = build.get_build(dependency_build_id)['payload_json']
+        for build_type in project_info['buildTypes']['buildType']:
+            if build_type['id'] == dependency_build['buildTypeId']:
+                build_type_id = project_info['buildTypes']['buildType'][currentIndex + 1]['id']
+                break
+            currentIndex += 1
+
+        # get dependent builds
+        dependency_build_types = get_dependency_build_types(build_type_id)
+        print ('dependency build types: ', dict(types=dependency_build_types))
+        print ('version to check: ', dependency_build['number'])
+        # Sök upp lämpliga byggen för varje dependency för att använda till triggning
+        dependency_build_ids = []
+        for dependency_id in dependency_build_types:
+            dependency_build_ids.append(get_build_id_for_version(dependency_id, dependency_build['number']))
+            
+        print ('dependency build ids: ', dict(ids=dependency_build_ids))
+
+        # Skapa och skicka post till TC typ som idag
+        result = tcRequest.start_build(build_type_id, dependency_build_ids)
+        resp = dict(
+                    projectId=project_id,
+                    dependencyBuildId=dependency_build_id,
+                    configurationId=build_type_id)
+
+        self.write(result.content)
+
+
+def get_build_id_for_version(build_type_id, build_version):
+    # get builds for configuration
+    builds_for_configuration = configuration.get_builds(build_type_id)['payload_json']['build']
+    
+    # find last successful build
+    builds_for_version = filter(lambda x: x['number'] == build_version, builds_for_configuration)
+    
+    successful_build = list(filter(lambda y: y['status'] == 'SUCCESS', builds_for_version))
+    
+    # return that
+    return successful_build[0]['id']
+
+
+def get_dependency_build_types(build_type_id):
+    # Anrop mot TC för att hitta snapshot dependencies
+    dependency_build_types = []
+    build_stage_info = configuration.get_build_stage(build_type_id)['payload_json']
+    for dependency in build_stage_info['snapshot-dependencies']['snapshot-dependency']:
+        dependency_build_types.append(dependency['id'])
+        # dependency_stage_build_id = configuration.get_builds(dependency_stage_id)
+        # det här är inte ett bygge utan flera, se nästa kommentar pucko
+        # dependency_build_types.append(dependency_stage_build_id)
+
+    return dependency_build_types
 
 
 def get_pending_builds(build_queue, build_type_id):
