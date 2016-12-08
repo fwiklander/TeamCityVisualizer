@@ -180,10 +180,7 @@ def get_build_id_for_version(build_type_id, build_version):
 
 
 def get_dependency_build_types(build_type_id):
-    # Anrop mot TC för att hitta snapshot dependencies
-    dependency_build_types = []
     build_stage_info = configuration.get_build_stage(build_type_id)['payload_json']
-    
     return list(map(lambda dependency: dependency['id'], build_stage_info['snapshot-dependencies']['snapshot-dependency']))
 
 
