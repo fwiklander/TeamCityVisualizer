@@ -35,7 +35,7 @@ class CurrentBuildChainHandler(tornado.web.RequestHandler):
                 name=tc_build_type['name'],
                 webUrl=tc_build_type['webUrl'],
                 lastBuild=build_info['build'],
-                pendingBuilds=build_info['pendingCount'])
+                pendingBuilds=build_info['pendingBuilds'])
 
             result['buildStages'].append(buildType)
 
@@ -193,10 +193,10 @@ def get_build_info(build_type_id):
     if tc_builds is None:
         return dict()
     
-    build_info = dict(pendingCount=0)
+    build_info = dict(pendingBuilds=0)
     for tc_build in tc_builds:
         if tc_build['state'] == 'queued':
-            build_info['pendingCount'] += 1
+            build_info['pendingBuilds'] += 1
         else:
             build_info['build'] = dict(
                 id=tc_build['id'],

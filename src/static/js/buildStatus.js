@@ -6,23 +6,22 @@ function setBuildHistory() {
         if (request.status === 200) {
             result = JSON.parse(request.responseText);
             count = result.historyCount;
-            if(count > 0){
+            if (count > 0) {
                 var index = 0;
-                result.history.forEach(function(historyItem){
+                result.history.forEach(function (historyItem) {
                     var dependencyBuildId = historyItem.buildChain[0].id;
                     var chainIdentifier = chainIdentifierHistory + (index > 0 ? index : '');
                     $('#buildChainHeader' + chainIdentifier).children('span').html('v' + historyItem.version);
-                    historyItem.buildChain.forEach(function(buildChainItem) {
+                    historyItem.buildChain.forEach(function (buildChainItem) {
                         var elemId = '#buildType' + buildChainItem.buildStageId + chainIdentifier;
                         updateBuildStage(elemId, buildChainItem, false);
                     });
-                    $('#buildChainHeader' + chainIdentifier).find('#promoteBuildButton').click(function(){
+                    $('#buildChainHeader' + chainIdentifier).find('#promoteBuildButton').click(function () {
                         var request = new XMLHttpRequest();
-                        request.onload = function(response) {
+                        request.onload = function (response) {
                             if (request.status === 200) {
                                 alert('Build triggered for ' + dependencyBuildId);
-                            }
-                            else{
+                            } else {
                                 alert('Build failed to trigger');
                             }
                         }
@@ -49,10 +48,10 @@ function setLastSuccessfulBuildChain() {
         if (request.status === 200) {
             result = JSON.parse(request.responseText);
             count = result.buildTypeCount;
-            if(count > 0){
+            if (count > 0) {
                 $('#buildChainHeader' + chainIdentifierLastComplete).children('span').html(' - v' + result.version);
                 var buildChain = result.chain;
-                buildChain.forEach(function(chainItem){
+                buildChain.forEach(function (chainItem) {
                     var elemId = '#buildType' + chainItem.buildStageId + chainIdentifierLastComplete;
                     updateBuildStage(elemId, chainItem, false);
                 });
@@ -80,6 +79,19 @@ function updateCurrentBuildChain() {
                     var elemId = '#buildType' + buildStage.id + chainIdentifierCurrent;
                     var isLastConfiguration = (stageIndex == count - 1);
                     updateBuildStage(elemId, buildStage.lastBuild, isLastConfiguration);
+
+                    if (buildStage.pendingBuilds != null) {
+                        var elemQueuedBuild = $(elemId).find('#queuedBuild');
+                        if (elemQueuedBuild != null) {
+                            elemQueuedBuild.prop('title', buildStage.pendingBuilds + ' build(s) in queue for this configuration');
+                            elemQueuedBuild.attr('title', buildStage.pendingBuilds + ' build(s) in queue for this configuration');
+                            if (buildStage.pendingBuilds > 0) {
+                                elemQueuedBuild.removeClass('template');
+                            } else {
+                                elemQueuedBuild.addClass('template');
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -96,20 +108,20 @@ function updateBuildStage(elemId, build, isLastConfigurationInChain) {
     var cssClass = 'None';
     if (build != null) {
         stageElement.find('#ConfigurationTitle').html(stageElement.data('configName') + (build.version != null ? ('</br>v' + build.version) : ''));
-        
+
         // startBuildElem = stageElement.find('#startBuild');
         // alert('Start build elem is ' + startBuildElem);
-        stageElement.find('#startBuild').click(function(){
-                var request = new XMLHttpRequest();
-                request.onload = function(response) {
-                    if (request.status === 200) {
-                        alert('Build triggered');
-                    }
+        stageElement.find('#startBuild').click(function () {
+            var request = new XMLHttpRequest();
+            request.onload = function (response) {
+                if (request.status === 200) {
+                    alert('Build triggered');
                 }
+            }
 
-                request.open('GET', '/configuration/' + build.buildStageId + '/trigger/' + build.id, true);
-                request.send();
-            });
+            request.open('GET', '/configuration/' + build.buildStageId + '/trigger/' + build.id, true);
+            request.send();
+        });
 
         cssClass = build.status;
         if (cssClass === 'UNKNOWN') {
