@@ -183,13 +183,8 @@ def get_dependency_build_types(build_type_id):
     # Anrop mot TC för att hitta snapshot dependencies
     dependency_build_types = []
     build_stage_info = configuration.get_build_stage(build_type_id)['payload_json']
-    for dependency in build_stage_info['snapshot-dependencies']['snapshot-dependency']:
-        dependency_build_types.append(dependency['id'])
-        # dependency_stage_build_id = configuration.get_builds(dependency_stage_id)
-        # det här är inte ett bygge utan flera, se nästa kommentar pucko
-        # dependency_build_types.append(dependency_stage_build_id)
-
-    return dependency_build_types
+    
+    return list(map(lambda dependency: dependency['id'], build_stage_info['snapshot-dependencies']['snapshot-dependency']))
 
 
 def get_pending_builds(build_queue, build_type_id):
