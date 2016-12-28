@@ -111,7 +111,7 @@ function updateBuildStage(elemId, build, isLastConfigurationInChain) {
 
     var cssClass = 'None';
     if (build != null) {
-        stageElement.find('#ConfigurationTitle').html(stageElement.data('configName') + (build.version != null ? ('</br>v' + build.version) : ''));
+        stageElement.find('#ConfigurationTitle').html(stageElement.data('configName') + (build.version != null ? ('<br/>v' + build.version) : ''));
 
         // startBuildElem = stageElement.find('#startBuild');
         // alert('Start build elem is ' + startBuildElem);
