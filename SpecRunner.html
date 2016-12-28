@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Jasmine Spec Runner v2.5.2</title>
+  <!-- http://matthewroach.me/basic-jquery-testing-with-jasmine-part-1/ -->
+  <!--<link rel="shortcut icon" type="image/png" href="test/lib/jasmine-2.5.2/jasmine_favicon.png">-->
+  <!--<link rel="stylesheet" href="test/lib/jasmine-2.5.2/jasmine.css">-->
+  
+  <!-- jasmine css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.5.2/jasmine.min.css">
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous">
+  </script>
+  
+  <!-- jasmine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.5.2/jasmine.min.js"></script>
+  
+  <!-- jasmine html -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.5.2/jasmine-html.min.js"></script>
+  
+  <!-- jasmine boot -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.5.2/boot.min.js"></script>
+  
+  <!-- jasmine ajax mock -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine-ajax/3.3.1/mock-ajax.min.js"></script>
+  
+  <!-- jasmine jquery -->
+  <script src="https://bowercdn.net/c/jasmine-jquery-2.1.1/lib/jasmine-jquery.js"></script>
+
+  <!--<script src="test/lib/jasmine-2.5.2/jasmine.js"></script>
+  <script src="test/lib/jasmine-2.5.2/jasmine-html.js"></script>
+  <script src="test/lib/jasmine-2.5.2/boot.js"></script>
+  <script src="test/lib/jasmine-ajax-3.3.1/mock-ajax.js"></script>
+  <script src='test/lib/jasmine-jquery-2.1.1/jasmine-jquery.js'></script>-->
+  <script>
+    jasmine.getFixtures().fixturesPath = 'test/spec/fixtures';
+  </script>
+
+  <!-- Source files -->
+  <script src="src/static/js/css.js"></script>
+  <script src="src/static/js/buildStatus.js"></script>
+
+  <!-- Spec files -->
+  <script src="test/spec/cssSpec.js"></script>
+  <script src="test/spec/buildStatusSpec.js"></script>
+
+</head>
+
+<body>
+</body>
+</html>

@@ -44,24 +44,28 @@ function setLastSuccessfulBuildChain() {
     projectId = jQuery.data(document.body, "projectId");
     var request = new XMLHttpRequest();
 
-    request.onload = function (response) {
-        if (request.status === 200) {
-            result = JSON.parse(request.responseText);
-            count = result.buildTypeCount;
-            if (count > 0) {
-                $('#buildChainHeader' + chainIdentifierLastComplete).children('span').html(' - v' + result.version);
-                var buildChain = result.chain;
-                buildChain.forEach(function (chainItem) {
-                    var elemId = '#buildType' + chainItem.buildStageId + chainIdentifierLastComplete;
-                    updateBuildStage(elemId, chainItem, false);
-                });
-            }
-        }
+    request.onload = function(){
+      if (request.status === 200) {
+        result = JSON.parse(request.responseText);
+        lastSuccessfulBuildOnSuccess(result);
+      }
     }
 
     // Set up and make the request.
     request.open('GET', '/project/' + projectId + '/lastCompleteBuildChain', true);
     request.send();
+}
+
+function lastSuccessfulBuildOnSuccess(response){
+  count = response.buildTypeCount;
+  if (count > 0) {
+    $('#buildChainHeader' + chainIdentifierLastComplete).children('span').html(' - v' + response.version);
+    var buildChain = response.chain;
+    buildChain.forEach(function (chainItem) {
+      var elemId = '#buildType' + chainItem.buildStageId + chainIdentifierLastComplete;
+      updateBuildStage(elemId, chainItem, false);
+    });
+  }
 }
 
 function updateCurrentBuildChain() {
@@ -111,7 +115,7 @@ function updateBuildStage(elemId, build, isLastConfigurationInChain) {
 
         // startBuildElem = stageElement.find('#startBuild');
         // alert('Start build elem is ' + startBuildElem);
-        stageElement.find('#startBuild').click(function () {
+        /*stageElement.find('#startBuild').click(function () {
             var request = new XMLHttpRequest();
             request.onload = function (response) {
                 if (request.status === 200) {
@@ -121,7 +125,7 @@ function updateBuildStage(elemId, build, isLastConfigurationInChain) {
 
             request.open('GET', '/configuration/' + build.buildStageId + '/trigger/' + build.id, true);
             request.send();
-        });
+        });*/
 
         cssClass = build.status;
         if (cssClass === 'UNKNOWN') {
