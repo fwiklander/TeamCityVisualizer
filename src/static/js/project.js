@@ -128,10 +128,10 @@ function renderBuildSteps(template, configurationDiv, buildTypes, buildIdentifie
   }
 }
 
-function setBuildChainArrow(sourceElem, targetElem) {
+function setBuildChainArrow(sourceElemId, targetElemId) {
   jsPlumb.connect({
-    source: sourceElem,
-    target: targetElem,
+    source: sourceElemId,
+    target: targetElemId,
     anchors: ["Right", "Left"],
     endpoint: "Blank",
     connector: "Straight",

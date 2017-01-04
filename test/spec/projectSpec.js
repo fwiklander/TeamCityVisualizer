@@ -214,4 +214,22 @@ describe("Render build chains", function () {
       expect(setBuildChainArrow).not.toHaveBeenCalled();
     });
   });
+
+  describe("Tests for setBuildChainArrow", function () {
+    it("should call jsPlumb with correct parameters", function () {
+      spyOn(jsPlumb, 'connect');
+      setBuildChainArrow('sourceId', 'targetId');
+      expect(jsPlumb.connect).toHaveBeenCalledTimes(1);
+      expect(jsPlumb.connect).toHaveBeenCalledWith({
+        source: 'sourceId',
+        target: 'targetId',
+        anchors: ["Right", "Left"],
+        endpoint: "Blank",
+        connector: "Straight",
+        overlays: ["Arrow"],
+        connectorOverlays: "Arrow",
+        detachable: false
+      });
+    });
+  });
 });
