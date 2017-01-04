@@ -144,9 +144,17 @@ function setBuildChainArrow(sourceElemId, targetElemId) {
 function displayUserMessage(message, severity) {
   var elem = $('#messageContent');
   elem.text(message);
-  // elem.css('display', 'inline-block');
-  // elem.css('top', $(document).scrollTop());
+  elem.css('display', 'inline-block');
   scrollMessageContent();
+  setTimeout(function () {
+    hideUserMessage();
+  }, 10000);
+}
+
+function hideUserMessage() {
+  var elem = $('#messageContent');
+  elem.text('');
+  elem.css('display', 'none');
 }
 
 function scrollMessageContent() {

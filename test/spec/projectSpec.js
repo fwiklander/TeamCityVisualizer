@@ -12,6 +12,7 @@ describe("User messages", function () {
     testMessage;
 
     beforeEach(function () {
+      jasmine.clock().install();
       var elemId = 'messageContent';
       testMessage = 'This is a unit test';
       setFixtures(sandbox({
@@ -25,14 +26,44 @@ describe("User messages", function () {
       testElement = $('#' + elemId);
     });
 
+    afterEach(function () {
+      jasmine.clock().uninstall();
+    });
+
     it("should display a div with the supplied text", function () {
       expect(testElement.attr('style')).not.toContain('display: none;');
       expect(testElement.text()).toContain(testMessage);
-      pending('Method should display the div, currently not implemented');
     });
 
     it("should be positioned at the top of the page", function () {
       expect(scrollMessageContent).toHaveBeenCalledTimes(1);
+    });
+
+    it("should hide the user message after 10 seconds", function () {
+      spyOn(window, 'hideUserMessage');
+      jasmine.clock().tick(10000);
+      expect(hideUserMessage).toHaveBeenCalled();
+    });
+  });
+
+  describe("Tests for hideUserMessage", function () {
+    beforeEach(function () {
+      setFixtures(sandbox({
+          id: 'messageContent',
+          style: 'display: inline-block;'
+        }));
+
+      displayUserMessage('Testing hiding the user message');
+    });
+
+    it("should hide the message content div", function () {
+      hideUserMessage();
+      expect($('#messageContent').attr('style')).toContain('display: none;');
+    });
+
+    it("should clear the text message", function () {
+      hideUserMessage();
+      expect($('#messageContent').text()).toEqual('');
     });
   });
 
