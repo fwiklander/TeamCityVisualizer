@@ -104,6 +104,12 @@ function setConfigurations(template, configurationDiv, buildTypes, buildIdentifi
   divElement += '<span style="font-size: large;"></span>' + buttonElement + '</div>';
   configurationDiv.append(divElement);
 
+  renderBuildSteps(template, configurationDiv, buildTypes, buildIdentifier);
+
+  return buildTypes;
+}
+
+function renderBuildSteps(template, configurationDiv, buildTypes, buildIdentifier) {
   for (var i = 0; i < buildTypes.length; i++) {
     var clone = template.clone();
     clone.prop('id', 'buildType' + buildTypes[i]['id'] + buildIdentifier);
@@ -117,15 +123,12 @@ function setConfigurations(template, configurationDiv, buildTypes, buildIdentifi
     if (i > 0) {
       setBuildChainArrow(
         ('buildType' + buildTypes[i - 1].id + buildIdentifier),
-        ('buildType' + buildTypes[i].id + buildIdentifier)
-      );
+        ('buildType' + buildTypes[i].id + buildIdentifier));
     }
   }
-
-  return buildTypes;
 }
 
-function setBuildChainArrow(sourceElem, targetElem){
+function setBuildChainArrow(sourceElem, targetElem) {
   jsPlumb.connect({
     source: sourceElem,
     target: targetElem,
@@ -138,7 +141,7 @@ function setBuildChainArrow(sourceElem, targetElem){
   });
 }
 
-function displayUserMessage(message, severity){
+function displayUserMessage(message, severity) {
   var elem = $('#messageContent');
   elem.text(message);
   // elem.css('display', 'inline-block');
@@ -146,7 +149,7 @@ function displayUserMessage(message, severity){
   scrollMessageContent();
 }
 
-function scrollMessageContent(){
+function scrollMessageContent() {
   var elem = $('#messageContent');
   elem.css('top', $(document).scrollTop());
 }
