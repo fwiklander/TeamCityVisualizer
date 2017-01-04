@@ -41,12 +41,35 @@
     <script>
         $(function(){
             getProject('{{ project_id }}', setProjectInfo);
+            $(window).scroll(function(){
+              if($('#messageContent').is(':visible')){
+                scrollMessageContent();
+              }
+            });
         });
     </script>
     <style>
+      .userMessage{
+        position: absolute;
+        top: 0px;
+        left: 60%;
+        height: 4em;
+        width: 35%;
+        background-color: rgba(255, 255, 255, 0.2);
+        z-index: 9999;
+        color: black;
+        // display: inline-block;
+        text-align: center;
+        padding-top: 1em;
+        border-radius: 0px 0px 5em 5em;
+        // display: none;
+      }
     </style>
 </head>
 <body>
+    <div id="messageContent" class="userMessage" style="display: none">
+      This should be an overlay
+    </div>
 <div id="mainDiv" class="container-fluid">
     <div id="projectContentTemplate" class="panel-group border project roundedProject template">
         <div class="panel-heading">
