@@ -1,8 +1,4 @@
 # TeamCityVisualizer
-## Purpose
-This is a combination of learning python as well as refreshing some JS/jQuery/CSS knowledge. As I wanted to do something with a purpose I decided to do a visualizer for TeamCity build chains.
-The visualizer currently assumes usage of the TeamCity build chains and snapshot dependencies but should work for most setups in TeamCity.
-
 ## Functionality
 Finds all configurations for a project and displays them with color depending on the current status of the configuration. If the project is setup to use snapshot dependencies then you will also see the last completed build chain as well as the n number of last build chains started. (n) is currently hard coded in project.js so is easy to change, I might implement a config for the project at some point but currently no such plan.
 
@@ -30,7 +26,7 @@ If your TC project is not setup to use snapshot dependencies then the history wi
 
 ## Limitations
 - No work has been put into authentication and the backend is currently using guestAuth to access the TC API.
-- I set out to avoid using double bracket libraries as this started as a training exercise.
 - Some work stil has to be put into escaping strings before attaching them to the DOM.
 - Both backend and frontend is set up as if everything is fine and no consideration is taken to status code returned from TC.
-- No tests have yet been written as the main purpose was to learn the basics of python. Tests will be implemented once a first working version is in place.
+- Tests for the bulk of the JavaScript code has been written but I stil need to learn testing in Python to get to an acceptable level for that part of the code.
+- No automatic testing on push, tests need to be run manually using the SpecRunner.html file for now.
