@@ -265,7 +265,7 @@ describe("Render build chains", function () {
   });
 
   describe("Tests for getProject", function () {
-      var callbackFunction;
+    var callbackFunction;
     var testProjectId = 'someProjectId';
     var testResponseMessage = {
       val: 'This is a unit test'
@@ -305,6 +305,38 @@ describe("Render build chains", function () {
       expect(request.url).toBe('/project/' + testProjectId);
       expect(request.method).toBe('GET');
       expect(callbackFunction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("Tests for setProjectInfo", function () {
+    var projectTemplate,
+    configurationTemplate,
+    collapseTemplate;
+    var testData = getJSONFixture('projectData.json');
+
+    beforeEach(function () {
+      loadFixtures('projectFixture.html');
+      spyOn(window, 'setConfigurations');
+      spyOn(window, 'updateCurrentBuildChain');
+      spyOn(window, 'setLastSuccessfulBuildChain');
+      spyOn(window, 'setBuildHistory');
+    });
+
+    it("should call setConfigurations for all three sections", function () {
+      var data = testData.validProjectSimple;
+      projectTemplate = $('#projectContentTemplate').clone(true);
+      collapseTemplate = projectTemplate.find('#collapseLink');
+      configurationTemplate = projectTemplate.find('#collapseLink').find('#configurationTemplate');
+
+      projectTemplate.prop('id', 'project' + data.id);
+      collapseTemplate.prop('id', 'collapse' + data.id);
+
+      setProjectInfo(data);
+
+      expect(setConfigurations).toHaveBeenCalledTimes(2 + buildsToDisplayInHistory);
+      expect(setConfigurations).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), data.buildTypes.buildType, chainIdentifierCurrent);
+      expect(setConfigurations).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), data.buildTypes.buildType, chainIdentifierLastComplete);
+      expect(setConfigurations).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), data.buildTypes.buildType, chainIdentifierHistory);
     });
   });
 });

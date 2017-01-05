@@ -85,4 +85,6 @@ describe("CSS changes", function () {
       expect(nonBlinkingElement.attr('title')).toContain(testResponse.canceledInfo.user.name);
     });
   });
+
+  describe("Tests for setProjectInfo", function () {});
 });

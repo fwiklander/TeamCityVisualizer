@@ -1,0 +1,13 @@
+{
+  "validProjectSimple": {
+    "id": "validProjectSimple",
+    "name": "Valid Project Simple",
+    "description": "Valid Project Simple Description",
+    "buildTypes": {
+      "buildType": [{
+          "id": "simpleBuildStep1"
+        }
+      ]
+    }
+  }
+}
