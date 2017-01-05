@@ -315,6 +315,9 @@ describe("Render build chains", function () {
     var testData = getJSONFixture('projectData.json');
 
     beforeEach(function () {
+      projectTemplate = null;
+      configurationTemplate = null;
+      collapseTemplate = null;
       loadFixtures('projectFixture.html');
       spyOn(window, 'setConfigurations');
       spyOn(window, 'updateCurrentBuildChain');
@@ -337,6 +340,28 @@ describe("Render build chains", function () {
       expect(setConfigurations).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), data.buildTypes.buildType, chainIdentifierCurrent);
       expect(setConfigurations).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), data.buildTypes.buildType, chainIdentifierLastComplete);
       expect(setConfigurations).toHaveBeenCalledWith(jasmine.any(Object), jasmine.any(Object), data.buildTypes.buildType, chainIdentifierHistory);
+    });
+
+    it("should update parameters for created project markup", function () {
+      var data = testData.validProjectSimple;
+      setProjectInfo(data);
+
+      projectTemplate = $('#project' + data.id);
+      collapseTemplate = $('#collapse' + data.id);
+      expect(projectTemplate.prop('id')).toEqual('project' + data.id);
+      expect(collapseTemplate.prop('id')).toEqual('collapse' + data.id);
+      expect(projectTemplate.find('#collapseLink').prop('href')).toContain('collapse' + data.id);
+      expect(projectTemplate.find('#projectTitle').html()).toEqual(data.name + ' <small>' + data.description + '</small>');
+    });
+
+    it("should not set undefined if no description available", function () {
+      var data = testData.validProjectSimple;
+      data.description = null;
+
+      setProjectInfo(data);
+      projectTemplate = $('#project' + data.id);
+
+      expect(projectTemplate.find('#projectTitle').html()).toEqual(data.name + ' <small></small>');
     });
   });
 });
