@@ -263,4 +263,48 @@ describe("Render build chains", function () {
       });
     });
   });
+
+  describe("Tests for getProject", function () {
+      var callbackFunction;
+    var testProjectId = 'someProjectId';
+    var testResponseMessage = {
+      val: 'This is a unit test'
+    };
+
+    beforeEach(function () {
+      callbackFunction = jasmine.createSpy('callback');
+      jasmine.Ajax.install();
+    });
+
+    afterEach(function () {
+      callbackFunction = null;
+      jasmine.Ajax.uninstall();
+    });
+
+    it("should call the callback function on success", function () {
+      getProject(testProjectId, callbackFunction);
+      var request = jasmine.Ajax.requests.mostRecent();
+      request.respondWith({
+        status: 200,
+        responseText: JSON.stringify(testResponseMessage)
+      });
+
+      expect(request.url).toBe('/project/' + testProjectId);
+      expect(request.method).toBe('GET');
+      expect(callbackFunction).toHaveBeenCalledWith(testResponseMessage);
+    });
+
+    it("should not call callback function on failure", function () {
+      getProject(testProjectId, callbackFunction);
+      var request = jasmine.Ajax.requests.mostRecent();
+      request.respondWith({
+        status: 500,
+        responseText: JSON.stringify(testResponseMessage)
+      });
+
+      expect(request.url).toBe('/project/' + testProjectId);
+      expect(request.method).toBe('GET');
+      expect(callbackFunction).not.toHaveBeenCalled();
+    });
+  });
 });
