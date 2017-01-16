@@ -313,6 +313,7 @@ describe("Render build chains", function () {
     configurationTemplate,
     collapseTemplate;
     var testData = getJSONFixture('projectData.json');
+    var docTitle = document.title;
 
     beforeEach(function () {
       projectTemplate = null;
@@ -323,6 +324,10 @@ describe("Render build chains", function () {
       spyOn(window, 'updateCurrentBuildChain');
       spyOn(window, 'setLastSuccessfulBuildChain');
       spyOn(window, 'setBuildHistory');
+    });
+
+    afterAll(function () {
+      document.title = docTitle;
     });
 
     it("should call setConfigurations for all three sections", function () {
