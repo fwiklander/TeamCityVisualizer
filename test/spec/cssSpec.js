@@ -98,17 +98,5 @@ describe("CSS changes", function () {
       expect(nonBlinkingElement.attr('title')).toBeDefined();
       expect(nonBlinkingElement.attr('title')).toContain(testResponse.canceledInfo.text);
     });
-
-    it("Should set the reason for the cancellation", function () {
-      setCanceledByStatus(1, nonBlinkingElement);
-      var request = jasmine.Ajax.requests.mostRecent();
-      request.respondWith({
-        status: 200,
-        responseText: JSON.stringify(testResponse)
-      });
-
-      expect(nonBlinkingElement.attr('title')).toBeDefined();
-      expect(nonBlinkingElement.attr('title')).toContain(testResponse.canceledInfo.text);
-    });
   });
 });
