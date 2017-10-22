@@ -70,6 +70,7 @@ describe("CSS changes", function () {
         status: 200,
         responseText: JSON.stringify(testResponse)
       });
+
       expect(request.url).toBe('/build/' + buildNo);
       expect(request.method).toBe('GET');
     });
@@ -81,8 +82,21 @@ describe("CSS changes", function () {
         status: 200,
         responseText: JSON.stringify(testResponse)
       });
+
       expect(nonBlinkingElement.attr('title')).toBeDefined();
       expect(nonBlinkingElement.attr('title')).toContain(testResponse.canceledInfo.user.name);
+    });
+
+    it("Should set the reason for the cancellation", function () {
+      setCanceledByStatus(1, nonBlinkingElement);
+      var request = jasmine.Ajax.requests.mostRecent();
+      request.respondWith({
+        status: 200,
+        responseText: JSON.stringify(testResponse)
+      });
+
+      expect(nonBlinkingElement.attr('title')).toBeDefined();
+      expect(nonBlinkingElement.attr('title')).toContain(testResponse.canceledInfo.text);
     });
   });
 });
